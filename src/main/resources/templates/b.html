@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Dashboard Template for Bootstrap</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.min.css}" rel="stylesheet">
+    <style type="text/css">
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="commons/user::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="commons/user::#sidebar(activeUri='mycreatemeeting')"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+<!--            <div class="table-responsive">-->
+                <table class="table" >
+                    <tr>
+                        <th th:text="${session.marks.get(0).length()>0 && !session.marks.get(0).equals('null')}?${session.marks.get(0)}"></th>
+                        <th th:text="${session.marks.get(1).length()>0 && !session.marks.get(1).equals('null')}?${session.marks.get(1)}"></th>
+                        <th th:text="${session.marks.get(2).length()>0 && !session.marks.get(2).equals('null')}?${session.marks.get(2)}"></th>
+                        <th th:text="${session.marks.get(3).length()>0 && !session.marks.get(3).equals('null')}?${session.marks.get(3)}"></th>
+                        <th th:text="${session.marks.get(4).length()>0 && !session.marks.get(4).equals('null')}?${session.marks.get(4)}"></th>
+                    </tr>
+                    <!--                    private Integer muid;           //会议成员信息的唯一号码-->
+                    <!--                    private Integer mid;        //参加的会议的唯一表示号码-->
+                    <!--                    private Integer munumber;   //会议唯一编号-->
+                    <!--                    private Integer uid;      //参加该会议用户的id-->
+                    <!--                    private String name;      //姓名-->
+                    <!--                    private Integer sex;      //性别-->
+                    <!--                    private String idnumber;   //身份证号码，规定为18位数-->
+                    <!--                    private String attedtime;   //参会时间-->
+                    <!--                    private Integer isneedroom; //判断参加会议的时候，是否需要房间-->
+                    <!--                    private  String mark;       //连接数字-->
+                    <tr th:each="emp2:${session.meetingmember2}">
+                        <td th:text="${session.marks.get(0).equals('姓名')}?${emp2.name}"></td>
+                        <td th:text="${session.marks.get(1).equals('性别')}?${emp2.sex}"></td>
+                        <td th:text="${session.marks.get(2).equals('身份证号')}?${emp2.idnumber}"></td>
+                        <td th:text="${session.marks.get(3).equals('参会时间')}?${emp2.attendtime}"></td>
+                        <td th:text="${session.marks.get(4).equals('是否需要房间')}?${emp2.isneedroom}"></td>
+                    </tr>
+                </table>
+                <div style="text-align: center">
+
+                    <a class="btn btn-sm btn-primary"  th:href="@{/abc.html}">返回</a>
+
+                </div>
+
+            <button  class="btn btn-sm btn-success"  id="btn">导出参会人员信息表</button>
+            <script type="text/javascript" src="/asserts/js/jquery.min.js"></script>
+            <script type="text/javascript" src="/asserts/js/jquery.qrcode.min.js"></script>
+            <script type="text/javascript" src="/asserts/js/jquery.table2excel.js"  charset="utf-8"></script>
+            <!--二维码 + 表格下载-->
+            <style type="text/css">
+                .demo{width:400px; margin:40px auto 0 auto; min-height:250px;}
+                .demo p{line-height:30px}
+                #code{margin-top:10px}
+            </style>
+
+            <script type="text/javascript">
+                $(function(){
+                    var str = "sdfdsf";
+                    $('#code').qrcode(str);
+
+                    $("#sub_btn1").click(function(){
+                        $("#code").empty();
+                        var str = toUtf8($("#mytxt1").val());
+
+                        $("#code").qrcode({
+                            render: "table",
+                            width: 200,
+                            height:200,
+                            text: str
+                        });
+                    });
+                })
+                function toUtf8(str) {
+                    var out, i, len, c;
+                    out = "";
+                    len = str.length;
+                    for(i = 0; i < len; i++) {
+                        c = str.charCodeAt(i);
+                        if ((c >= 0x0001) && (c <= 0x007F)) {
+                            out += str.charAt(i);
+                        } else if (c > 0x07FF) {
+                            out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                            out += String.fromCharCode(0x80 | ((c >>  6) & 0x3F));
+                            out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+                        } else {
+                            out += String.fromCharCode(0xC0 | ((c >>  6) & 0x1F));
+                            out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+                        }
+                    }
+                    return out;
+                }
+                $("#btn").click(function(){ //点击按钮执行导出
+                    $(".table").table2excel({ //选取导出的表格
+                        exclude: ".noExl", //写你不想都想导出的
+                        name: "Excel Document Name",
+                        filename: "会议成员名单", //导出的文件名
+                        exclude_img: true, //是否导出图片
+                        exclude_links: true,
+                        exclude_inputs: true
+                    });
+                })
+            </script>
+            <div class="demo" style="align-content: center">
+<!--                <p>请输入内容然后提交生成二维码：</p>-->
+                <p>
+                    <input type="hidden" class="input" id="mytxt1" th:value="${session.munumbers}">
+                    <input type="button" id="sub_btn1" value="点击生成二维码，返回该会议的唯一编号" class="btn btn-sm btn-success"></p>
+                <div id="code"></div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
